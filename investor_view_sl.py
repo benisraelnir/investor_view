@@ -1,16 +1,31 @@
+# This is a Python script that uses the Streamlit library to create an interactive web application. 
+# The purpose of this web application is to simulate a conversation between an entrepreneur and an investor. 
+# The conversation is facilitated by GPT-3.5-turbo, a powerful language model from OpenAI. Here is a breakdown of the code:
+# Note: This script requires an OpenAI API key to function correctly and the user needs to supply it through the Streamlit interface. This key provides access to the OpenAI GPT-3.5-turbo API used for generating responses.
+
+
+
+
+
+
+
+
+# Importing libraries: Importing necessary libraries for the application including Streamlit (st), pandas (pd), and OpenAI.
 import streamlit as st
 import pandas as pd
 from openai.error import OpenAIError
 import openai
 
+# This function sets the OpenAI API key in the Streamlit session state. The API key is necessary for making requests to the OpenAI GPT-3.5-turbo API.
 def set_openai_api_key(api_key: str):
     st.session_state["OPENAI_API_KEY"] = api_key
     st.session_state["api_key_configured"] = True
 
-    
+# This function is used to reset the 'submit' state in the Streamlit session state.    
 def clear_submit():
     st.session_state["submit"] = False
 
+# This function creates a sidebar for the web application where the user can enter the OpenAI API key and view information about the application.
 def sidebar():
     with st.sidebar:
         st.markdown(
@@ -41,11 +56,10 @@ def sidebar():
 
         
 
-
+# Main script: In the main part of the script, it sets the page title, icon, and layout for the Streamlit web application, sets a header, calls the sidebar() function, and provides a text area for the user to write their startup idea. It then handles the interaction when a user clicks the "Submit" button. It first checks if the API key is configured and if an idea has been entered. If both conditions are met, it initiates a conversation with the OpenAI model.
 
 st.set_page_config(page_title="InvestorView", page_icon="♜", layout="wide")
 st.header("♜InvestorView")
-
 sidebar()        
 st.write("Write about your startup. be specific as you can. include the problem, solution, stage (ideation, prototype, design parnters, paying costumers, profits), technologies, market, what are you looking for")
 query = st.text_area("draft it here ", on_change=clear_submit)
@@ -60,6 +74,9 @@ if button or st.session_state.get("submit"):
         st.session_state["submit"] = True
         
         try:
+            # OpenAI model interaction: The conversation involves back-and-forth interactions with the GPT-3.5-turbo model. 
+            # The model is presented as an investor responding to the startup pitch provided by the user. 
+            # The conversation iterates up to Max_Iter times (defined as 5 in this case), simulating a rich conversation. The progress of the conversation is also displayed using a progress bar.
             bar = st.progress(0)
             ent_sys = f'you are Nir, an enrepreneur that present to an investor your startup: {query}'
             investor_sys = '''you are investor that listen to a pitch and respond. be very precise. ask as many question as you wish. cover all aspects.  
@@ -94,6 +111,7 @@ if button or st.session_state.get("submit"):
             
 
         except OpenAIError as e:
+            # Error handling: Errors during the interaction with the OpenAI model are caught and displayed to the user.
             st.error(e._message)
         
             
