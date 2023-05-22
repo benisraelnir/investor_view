@@ -77,6 +77,7 @@ if button or st.session_state.get("submit"):
             # OpenAI model interaction: The conversation involves back-and-forth interactions with the GPT-3.5-turbo model. 
             # The model is presented as an investor responding to the startup pitch provided by the user. 
             # The conversation iterates up to Max_Iter times (defined as 5 in this case), simulating a rich conversation. The progress of the conversation is also displayed using a progress bar.
+            openai.api_key = st.session_state.get("OPENAI_API_KEY")
             bar = st.progress(0)
             ent_sys = f'you are Nir, an enrepreneur that present to an investor your startup: {query}'
             investor_sys = '''you are investor that listen to a pitch and respond. be very precise. ask as many question as you wish. cover all aspects.  
