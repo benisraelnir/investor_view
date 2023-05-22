@@ -92,21 +92,40 @@ if button or st.session_state.get("submit"):
                        ]
 
             for i in range(Max_Iter):
+                st.markdown("\n######### enrepreneur #########\n")
                 ent_res = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo", 
-                    messages= ent_msgs)
-                ent_msgs.append({"role": "assistant", "content": ent_res['choices'][-1].message["content"]})
-                st.markdown("\n######### enrepreneur #########\n")
-                st.markdown("{}".format(ent_res['choices'][-1].message["content"]))
-                investor_msgs.append({"role": "user", "content": ent_res['choices'][-1].message["content"]})
+                    messages=ent_msgs,
+                    stream=True)
+                ent_res_text = ""
+                text_placeholder = st.empty()
+                text_placeholder.markdown("{}".format(ent_res_text))
+                for chunk in ent_res:
+                    chunk_message = chunk['choices'][0]['delta']  # extract the message
+                    if "content" in chunk_message:
+                        message_text = chunk_message['content']
+                        ent_res_text += message_text
+                        text_placeholder.markdown("{}".format(ent_res_text))
+                ent_msgs.append({"role": "assistant", "content": ent_res_text}) # ent_res['choices'][-1].message["content"]
+                investor_msgs.append({"role": "user", "content": ent_res_text})
                 bar.progress(round((2*(i+1)-1)/Max_Iter/2*100))
+                
+                st.markdown("\n#########  investor: #########\n")
                 investor_res = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo", 
-                    messages= investor_msgs)
-                investor_msgs.append({"role": "assistant", "content": ent_res['choices'][-1].message["content"]})
-                st.markdown("\n#########  investor: #########\n")
-                st.markdown("{}".format(investor_res['choices'][-1].message["content"]))
-                ent_msgs.append({"role": "user", "content": investor_res['choices'][-1].message["content"]})
+                    messages=investor_msgs,
+                    stream=True)
+                investor_res_text = ""
+                text_placeholder = st.empty()
+                text_placeholder.markdown("{}".format(investor_res_text))    
+                for chunk in investor_res:
+                    chunk_message = chunk['choices'][0]['delta']  # extract the message
+                    if "content" in chunk_message:
+                        message_text = chunk_message['content']
+                        investor_res_text += message_text
+                        text_placeholder.markdown("{}".format(investor_res_text))
+                investor_msgs.append({"role": "assistant", "content": investor_res_text})
+                ent_msgs.append({"role": "user", "content": investor_res_text})
                 bar.progress(round((2*(i+1))/Max_Iter/2*100))
      
             
