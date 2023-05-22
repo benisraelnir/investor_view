@@ -49,7 +49,7 @@ st.header("♜InvestorView")
 sidebar()        
 st.write("Write about your startup. be specific as you can. include the problem, solution, stage (ideation, prototype, design parnters, paying costumers, profits), technologies, market, what are you looking for")
 query = st.text_area("draft it here ", on_change=clear_submit)
-       
+Max_Iter = 5       
 button = st.button("Submit")
 if button or st.session_state.get("submit"):
     if not st.session_state.get("api_key_configured"):
@@ -60,7 +60,7 @@ if button or st.session_state.get("submit"):
         st.session_state["submit"] = True
         
         try:
-            
+            bar = st.progress(0)
             ent_sys = f'you are Nir, an enrepreneur that present to an investor your startup: {query}'
             investor_sys = '''you are investor that listen to a pitch and respond. be very precise. ask as many question as you wish. cover all aspects.  
                               make sure you cover: problem, solution, who are the buyer, who are the user, go to market strategy, pricing model, competitors, technology aspects, financials, etc.
@@ -73,7 +73,7 @@ if button or st.session_state.get("submit"):
                         {"role": "system", "content": investor_sys},
                        ]
 
-            for i in range(5):
+            for i in range(Max_Iter):
                 ent_res = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo", 
                     messages= ent_msgs)
@@ -81,6 +81,7 @@ if button or st.session_state.get("submit"):
                 st.markdown("\n######### enrepreneur #########\n")
                 st.markdown("{}".format(ent_res['choices'][-1].message["content"]))
                 investor_msgs.append({"role": "user", "content": ent_res['choices'][-1].message["content"]})
+                bar.progress(round((2*(i+1)-1)/Max_Iter/2*100))
                 investor_res = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo", 
                     messages= investor_msgs)
@@ -88,6 +89,7 @@ if button or st.session_state.get("submit"):
                 st.markdown("\n#########  investor: #########\n")
                 st.markdown("{}".format(investor_res['choices'][-1].message["content"]))
                 ent_msgs.append({"role": "user", "content": investor_res['choices'][-1].message["content"]})
+                bar.progress(round((2*(i+1))/Max_Iter/2*100))
      
             
 
