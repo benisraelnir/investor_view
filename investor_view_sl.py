@@ -134,5 +134,6 @@ if button or st.session_state.get("submit"):
         except OpenAIError as e:
             # Error handling: Errors during the interaction with the OpenAI model are caught and displayed to the user.
             st.error(e._message)
+    st.session_state["submit"] = False
         
             
