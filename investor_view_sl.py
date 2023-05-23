@@ -15,6 +15,7 @@ import streamlit as st
 import pandas as pd
 from openai.error import OpenAIError
 import openai
+import time
 
 # This function sets the OpenAI API key in the Streamlit session state. The API key is necessary for making requests to the OpenAI GPT-3.5-turbo API.
 def set_openai_api_key(api_key: str):
@@ -109,7 +110,7 @@ if button or st.session_state.get("submit"):
                 ent_msgs.append({"role": "assistant", "content": ent_res_text}) # ent_res['choices'][-1].message["content"]
                 investor_msgs.append({"role": "user", "content": ent_res_text})
                 bar.progress(round((2*(i+1)-1)/Max_Iter/2*100))
-                
+                time.sleep(4)
                 st.markdown("\n#########  investor: #########\n")
                 investor_res = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo", 
@@ -127,7 +128,7 @@ if button or st.session_state.get("submit"):
                 investor_msgs.append({"role": "assistant", "content": investor_res_text})
                 ent_msgs.append({"role": "user", "content": investor_res_text})
                 bar.progress(round((2*(i+1))/Max_Iter/2*100))
-     
+                time.sleep(4)
             
 
         except OpenAIError as e:
